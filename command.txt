@@ -1,0 +1,20 @@
+
+docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=trungdb123@@' -p 1422:1433 --name ticket-db -d mcr.microsoft.com/azure-sql-edge
+
+docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=trungdb123@@' -p 1411:1433 --name bus-db -d mcr.microsoft.com/azure-sql-edge
+
+docker network create -d bridge my-bridge-network
+
+
+cd TicketOrder
+docker build -t ticket-service-image:latest .
+docker run -d -p 4300:80 --name ticket-service --network="my-bridge-network" ticket-service-image:latest
+// access localhost:4300/swagger/index.html to check the result (swagger UI of TicketOrder)
+
+cd BusTour
+docker build -t bus-service-image:latest .
+docker run -d -p 4400:80 --name bus-service --network="my-bridge-network" bus-service-image:latest
+// access localhost:4400/swagger/index.html to check the result (swagger UI of BusTour)
+
+
+

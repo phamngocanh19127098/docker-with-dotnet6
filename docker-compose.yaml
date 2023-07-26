@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  db-ticket-order:
+    image: mcr.microsoft.com/azure-sql-edge
+    ports:
+      - '1400:1433'
+    environment:
+      - MSSQL_SA_PASSWORD=trungdb123@@
+      - ACCEPT_EULA=Y
+  db-bus:
+    image: mcr.microsoft.com/azure-sql-edge
+    ports:
+      - '1399:1433'
+    environment:
+      - MSSQL_SA_PASSWORD=trungdb123@@
+      - ACCEPT_EULA=Y
+  ticket-order-service:
+    build: ./TicketOrder
+    ports:
+      - '5080:5080'
+    volumes:
+      - ~/data-ticket-order:/app
+    depends_on:
+      - db-ticket-order
+  bus-service:
+    build: ./BusTour
+    ports:
+      - '7145:7145'
+    volumes:
+      - ~/data-bus-order:/app
+    depends_on:
+      - db-bus
